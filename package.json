@@ -1,0 +1,76 @@
+{
+  "name": "loopback-connector-bull",
+  "version": "0.0.0",
+  "description": "loopback-connector-bull",
+  "license": "MIT",
+  "repository": "https://github.com/mrbatista/loopback-connector-bull.git",
+  "author": "",
+  "keywords": [
+    "StrongLoop",
+    "Loopback",
+    "Connector",
+    "Queue",
+    "Job",
+    "Bull",
+    "Redis"
+  ],
+  "files": [
+    "lib"
+  ],
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "clean": "rimraf lib",
+    "format": "prettier --write \"{src,test}/**/*.ts\"",
+    "lint": "tslint --force --format verbose \"src/**/*.ts\"",
+    "prepublishOnly": "npm run build",
+    "build": "npm run format && npm run clean && npm run lint && echo Using TypeScript && tsc --version && tsc --pretty",
+    "test": "npm run build && mocha --compilers ts:ts-node/register --recursive \"test/**/*.spec.ts\"",
+    "coverage": "nyc --include=\"src/**/*.ts\" --reporter=text --reporter=html --reporter=lcov mocha --compilers ts:ts-node/register --recursive \"test/**/*-spec.ts\"",
+    "watch": "npm run build -- --watch",
+    "watch:test": "npm run test -- --watch"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "bull": "^3.4.2",
+    "loopback-datasource-juggler": "^3.21.1"
+  },
+  "devDependencies": {
+    "@loopback/testlab": "^0.10.4",
+    "@types/bull": "^3.3.11",
+    "@types/chai": "^3.0.0",
+    "@types/mocha": "^2.0.0",
+    "@types/node": "^8.0.0",
+    "chai": "^3.0.0",
+    "coveralls": "^2.0.0",
+    "dirty-chai": "^2.0.1",
+    "ioredis": "^3.2.2",
+    "mocha": "^3.0.0",
+    "nyc": "^10.0.0",
+    "prettier": "^1.5.2",
+    "rimraf": "^2.0.0",
+    "ts-node": "^3.0.0",
+    "tslint": "^5.0.0",
+    "tslint-config-prettier": "^1.1.0",
+    "typescript": "^2.3.0"
+  },
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "lib"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [],
+    "all": true
+  }
+}
