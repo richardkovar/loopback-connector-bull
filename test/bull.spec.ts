@@ -2,19 +2,11 @@
 import { expect } from '@loopback/testlab';
 import * as Bull from 'bull';
 // tslint:disable-next-line:no-implicit-dependencies
-import * as redis from 'ioredis';
 import * as juggler from 'loopback-datasource-juggler';
 
-import { BullConnector, BullQueue } from '../src';
+import { BullConnector } from '../src/bull-connector';
 
-describe('Bull', () => {
-  let client;
-
-  beforeEach(() => {
-    client = new redis();
-    return client.flushdb();
-  });
-
+describe('Bull Connector', () => {
   it('should set up queue', () => {
     const connector = new BullConnector({
       name: 'bull',
@@ -24,55 +16,70 @@ describe('Bull', () => {
     expect.exist(connector.queueForName('queue'));
   });
 
-  it('should connect to custom url', () => {
+  it('should define options queue', () => {
+    const options: Bull.QueueOptions = {
+      limiter: {max: 5, duration: 10000}
+    };
     const connector = new BullConnector({
       name: 'bull',
       queues: [
         {
           name: 'queue',
-          options: { limiter: 5 },
-          url: 'redis://localhost:6379'
-        }
-      ]
+          options,
+        },
+      ],
     });
+
+    const queue = connector.queueForName('queue') as any;
+    expect.exist(queue);
+    expect(queue.limiter).to.be.eql(options.limiter);
   });
 
   describe('Job', () => {
-    let QueueModel: any;
+    let ds: juggler.DataSource;
+    let UserQueueModel: any;
+    let WalletQueueModel: any;
 
-    beforeEach(() => {
-      const ds = new juggler.DataSource({
+    before(() => {
+      ds = new juggler.DataSource({
         connector: BullConnector,
         name: 'bull',
-        queues: [{ name: 'default-queue' }, { name: 'specific-queue' }]
+        queues: [{ name: 'UserQueueModel' }, { name: 'WalletQueueModel' }]
       });
 
-      QueueModel = ds.createModel('QueueModel');
+      UserQueueModel = ds.createModel('UserQueueModel');
+      WalletQueueModel = ds.createModel('WalletQueueModel');
     });
 
-    describe('QueueModel.add()', () => {
+    afterEach(async () => {
+      await UserQueueModel.empty();
+      await WalletQueueModel.empty();
+    });
+
+    describe('UserQueueModel.add()', () => {
       it('add job to queue', async () => {
-        const job = await QueueModel.add('specific-queue', { foo: 'bar' });
-        expect(job.queue.name).to.be.equal('specific-queue');
+        const job = await UserQueueModel.add('email', { foo: 'bar' });
+        expect(job.name).to.be.equal('email');
+        expect(job.queue.name).to.be.equal('UserQueueModel');
         expect.exist(job);
         expect.exist(job.id);
-        return job.remove();
+        await job.remove();
       });
     });
 
-    describe('QueueModel.process()', () => {
+    describe('WalletQueueModel.process()', () => {
       it('process job to queue', async () => {
-        const job = await QueueModel.add('default-queue', {
+        const job = await WalletQueueModel.add('transaction', {
           foo: 'bar'
         });
         expect.exist(job);
         expect.exist(job.id);
 
-        QueueModel.process('default-queue', (j: Bull.Job) => {
+        WalletQueueModel.process('transaction', (j: Bull.Job) => {
           return Promise.resolve();
         });
 
-        const defaultQueue = QueueModel.get('default-queue');
+        const defaultQueue = WalletQueueModel.getQueue('WalletQueueModel');
 
         return new Promise((resolve, reject) => {
           defaultQueue.on('completed', (j: Bull.Job) => {
