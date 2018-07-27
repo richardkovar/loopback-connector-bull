@@ -79,10 +79,10 @@ describe('Bull Connector', () => {
           return Promise.resolve();
         });
 
-        const defaultQueue = WalletQueueModel.getQueue('WalletQueueModel');
+        const queue = WalletQueueModel.getQueue();
 
         return new Promise((resolve, reject) => {
-          defaultQueue.on('completed', (j: Bull.Job) => {
+          queue.on('completed', (j: Bull.Job) => {
             j.remove()
               .then(() => resolve())
               .catch(reject);
