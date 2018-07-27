@@ -1,16 +1,19 @@
 # gitignore
 
-coverage/
-node_modules/
+coverage
+node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .nyc_output
-lib
-lib_test
+.history
+.idea
+.loopbackrc
 
 # npmignore
 
-src/
-__tests__/
-.vscode/
+src
+__tests__
+test
+.vscode
+.travis.yml
