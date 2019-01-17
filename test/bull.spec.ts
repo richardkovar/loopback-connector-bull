@@ -65,6 +65,15 @@ describe('Bull Connector', () => {
         expect.exist(job.id);
         await job.remove();
       });
+
+      it('add job without name to queue', async () => {
+        const job = await UserQueueModel.add({ foo: 'bar' });
+        expect(job.name).to.be.equal('__default__');
+        expect(job.queue.name).to.be.equal('UserQueueModel');
+        expect.exist(job);
+        expect.exist(job.id);
+        await job.remove();
+      });
     });
 
     describe('WalletQueueModel.process()', () => {
