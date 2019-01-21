@@ -19,3 +19,9 @@ jobs:
         skip_cleanup: true
         script:
           - npx semantic-release
+
+branches:
+  only:
+    - master
+  except:
+    - /^v\d+\.\d+\.\d+$/
