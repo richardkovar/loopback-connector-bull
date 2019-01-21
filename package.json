@@ -1,7 +1,7 @@
 {
   "name": "loopback-connector-bull",
   "version": "0.1.0",
-  "description": "loopback-connector-bull",
+  "description": "Loopback Bull Connector",
   "license": "MIT",
   "repository": "https://github.com/mrbatista/loopback-connector-bull.git",
   "author": "Matteo Padovano <mrba7ista@gmail.com>",
