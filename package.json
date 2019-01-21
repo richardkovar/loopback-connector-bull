@@ -30,7 +30,8 @@
     "build": "npm run clean && npm run lint && echo Using TypeScript && tsc --version && tsc --pretty",
     "test": "npm run build && nyc mocha --compilers ts:ts-node/register --recursive \"test/**/*.spec.ts\"",
     "watch": "npm run build -- --watch",
-    "watch:test": "npm run test -- --watch"
+    "watch:test": "npm run test -- --watch",
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "bluebird": "^3.5.1",
@@ -52,10 +53,14 @@
     "nyc": "^10.0.0",
     "prettier": "^1.5.2",
     "rimraf": "^2.0.0",
+    "semantic-release": "^15.13.3",
     "ts-node": "^3.0.0",
     "tslint": "^5.0.0",
     "tslint-config-prettier": "^1.1.0",
     "typescript": "^2.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "nyc": {
     "include": [
