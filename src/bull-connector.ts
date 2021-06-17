@@ -1,8 +1,12 @@
-import * as Promise from 'bluebird';
-import * as Bull from 'bull';
+import * as Bluebird from 'bluebird';
+import * as Bull from 'bullmq';
+// tslint:disable-next-line:no-submodule-imports
+import { Queue3 } from 'bullmq/dist/classes/compat';
 // tslint:disable-next-line:no-implicit-dependencies
 import * as Redis from 'ioredis';
-import { Connector } from 'loopback-connector';
+// import { Connector } from 'loopback-connector';
+// tslint:disable-next-line:no-var-requires
+const Connector = require('loopback-connector');
 import { parse as urlParse } from 'url';
 import { DataAccessObject } from './data-access-object';
 
@@ -28,7 +32,7 @@ export class BullConnector extends Connector {
     this.setupQueue(settings);
   }
 
-  public queueForName(name: string): Bull.Queue | undefined {
+  public queueForName(name: string): Queue3 | undefined {
     return this.queues[name];
   }
 
@@ -59,7 +63,7 @@ export class BullConnector extends Connector {
       const name = queue.name;
       const options = queue.options || {};
 
-      const queueOptions: Bull.QueueOptions = {
+      const queueOptions: any = {
         ...options,
         ...{ redis: redisUrl }
       };
@@ -68,7 +72,7 @@ export class BullConnector extends Connector {
         queueOptions.createClient = createClient;
       }
 
-      this.queues[name] = new Bull(name, queueOptions);
+      this.queues[name] = new Queue3(name, queueOptions);
       this.queuesIndex.push(name);
     }
   }
@@ -83,10 +87,10 @@ export class BullConnector extends Connector {
 
   public disconnect(cb: any): any {
     if (this.queuesIndex.length > 0) {
-      Promise.map(this.queuesIndex, (queueName: string) => {
+      Bluebird.map(this.queuesIndex, (queueName: string) => {
         const queue = this.queues[queueName] as Bull.Queue;
         // tslint:disable-next-line:no-shadowed-variable
-        return new Promise(resolve => {
+        return new Promise<void>(resolve => {
           queue.on('completed', () => {
             queue
               .close()

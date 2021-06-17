@@ -6,7 +6,7 @@
     "lib": [
       "esnext", "dom"
     ],
-    "target": "es2015",
+    "target": "es2020",
     "strict": true,
     "outDir": "./lib",
     "preserveConstEnums": true,

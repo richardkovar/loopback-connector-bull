@@ -1,6 +1,6 @@
 // tslint:disable-next-line:no-implicit-dependencies
 import { expect } from '@loopback/testlab';
-import * as Bull from 'bull';
+import * as Bull from 'bullmq';
 // tslint:disable-next-line:no-implicit-dependencies
 import * as juggler from 'loopback-datasource-juggler';
 
@@ -17,9 +17,7 @@ describe('Bull Connector', () => {
   });
 
   it('should define options queue', () => {
-    const options: Bull.QueueOptions = {
-      limiter: {max: 5, duration: 10000}
-    };
+    const options: Bull.QueueOptions = {};
     const connector = new BullConnector({
       name: 'bull',
       queues: [
